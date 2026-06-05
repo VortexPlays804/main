@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Identity Form</title>
+
+    <!-- Phone input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #e0f7f7;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            width: 420px;
+            padding: 24px 28px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #008c8c;
+            text-align: center;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 13px;
+            color: #607d8b;
+            margin-bottom: 12px;
+        }
+
+        .step { display: none; }
+        .step.active { display: block; }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 9px 11px;
+            border-radius: 10px;
+            border: 1px solid #cfd8dc;
+            margin-bottom: 14px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-next { background: #00b3b3; color: white; }
+        .btn-prev { background: #eceff1; color: #333; }
+        .btn-generate { background: #00796b; color: white; width: 100%; margin-top: 10px; }
+
+        #photoPreview {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            border: 1px solid #cfd8dc;
+            object-fit: cover;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        /* Signature canvas */
+        #canvas {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #008c8c;
+            border-radius: 12px;
+            background: #ffffff;
+            touch-action: none;
+        }
+
+        /* WhatsApp-style phone input */
+        .iti { width: 100%; }
+        .iti input[type="tel"] {
+            padding-left: 90px !important;
+            border-radius: 999px;
+            border: 1.5px solid #00b3b3;
+            position: relative;
+        }
+        .iti__flag-container {
+            border-radius: 999px 0 0 999px;
+            background: #e0f7f7;
+        }
+        .iti input[type="tel"]::after {
+            content: "";
+            position: absolute;
+            left: 88px;
+            top: 7px;
+            bottom: 7px;
+            width: 1.5px;
+            background: #00b3b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Identity Form</h2>
+    <div class="progress" id="progressText">Step 1 of 7</div>
+
+    <!-- Step 1: Name -->
+    <div class="step active" id="step1">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Example: Ahmed Ali">
+        <div class="buttons">
+            <span></span>
+            <button class="btn-next" onclick="nextStep(1)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 2: Age -->
+    <div class="step" id="step2">
+        <label>Age</label>
+        <input type="number" id="age" placeholder="Example: 21">
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(2)">Back</button>
+            <button class="btn-next" onclick="nextStep(2)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 3: Email -->
+    <div class="step" id="step3">
+        <label>Email</label>
+        <input type="email" id="gmail" placeholder="example@gmail.com">
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(3)">Back</button>
+            <button class="btn-next" onclick="nextStep(3)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 4: Phone -->
+    <div class="step" id="step4">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="50 123 4567">
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(4)">Back</button>
+            <button class="btn-next" onclick="nextStep(4)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 5: Location -->
+    <div class="step" id="step5">
+        <label>Location</label>
+        <input type="text" id="location" placeholder="Example: Sharjah, UAE">
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(5)">Back</button>
+            <button class="btn-next" onclick="nextStep(5)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 6: Photo -->
+    <div class="step" id="step6">
+        <label>Upload a picture</label>
+        <input type="file" id="photo" accept="image/*">
+        <img id="photoPreview">
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(6)">Back</button>
+            <button class="btn-next" onclick="nextStep(6)">Next</button>
+        </div>
+    </div>
+
+    <!-- Step 7: Signature -->
+    <div class="step" id="step7">
+        <label>Signature</label>
+        <canvas id="canvas"></canvas>
+
+        <div class="buttons">
+            <button class="btn-prev" onclick="prevStep(7)">Back</button>
+            <button class="btn-next" onclick="clearCanvas()">Clear</button>
+        </div>
+
+        <button class="btn-generate" onclick="generatePDF()">Generate PDF</button>
+    </div>
+</div>
+
+<script>
+/* STEP SYSTEM */
+let currentStep = 1;
+function showStep(n) {
+    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+    document.getElementById("step" + n).classList.add("active");
+    currentStep = n;
+    document.getElementById("progressText").innerText = `Step ${n} of 7`;
+    if (n === 7) activateSignatureCanvas();
+}
+function nextStep(n) { showStep(n + 1); }
+function prevStep(n) { showStep(n - 1); }
+
+/* PHONE INPUT */
+const phoneInput = document.querySelector("#phone");
+const iti = window.intlTelInput(phoneInput, {
+    initialCountry: "ae",
+    preferredCountries: ["ae","pk","in","us","gb","sa"],
+    separateDialCode: true,
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+});
+
+/* PHOTO PREVIEW */
+document.getElementById("photo").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = document.getElementById("photoPreview");
+        img.src = ev.target.result;
+        img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+});
+
+/* SMOOTH SIGNATURE (MOUSE + TOUCH) */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+let drawing = false;
+let lastX = 0;
+let lastY = 0;
+
+function activateSignatureCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+}
+
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches && e.touches.length > 0) {
+        return {
+            x: e.touches[0].clientX - rect.left,
+            y: e.touches[0].clientY - rect.top
+        };
+    }
+    return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
+}
+
+function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#000";
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+
+    lastX = pos.x;
+    lastY = pos.y;
+}
+
+function endDraw() {
+    drawing = false;
+}
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseup", endDraw);
+canvas.addEventListener("mouseleave", endDraw);
+
+canvas.addEventListener("touchstart", startDraw, { passive: false });
+canvas.addEventListener("touchmove", draw, { passive: false });
+canvas.addEventListener("touchend", endDraw, { passive: false });
+canvas.addEventListener("touchcancel", endDraw, { passive: false });
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* PDF GENERATION */
+async function generatePDF() {
+    const name = document.getElementById("name").value;
+    const age = document.getElementById("age").value;
+    const gmail = document.getElementById("gmail").value;
+    const location = document.getElementById("location").value;
+    const phone = iti.getNumber();
+    const signature = canvas.toDataURL("image/png");
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("landscape", "mm", "a4");
+
+    pdf.setFillColor(245,253,253);
+    pdf.rect(0,0,297,210,"F");
+
+    pdf.setFontSize(18);
+    pdf.setTextColor(0,140,140);
+    pdf.text("Identity Card", 15, 20);
+
+    pdf.setDrawColor(0,140,140);
+    pdf.rect(10,25,277,160);
+
+    let x = 110, y = 50, gap = 8;
+    pdf.setFontSize(12);
+    pdf.setTextColor(40,40,40);
+    pdf.text(`Name: ${name}`, x, y); y+=gap;
+    pdf.text(`Phone: ${phone}`, x, y); y+=gap;
+    pdf.text(`Age: ${age}`, x, y); y+=gap;
+    pdf.text(`Email: ${gmail}`, x, y); y+=gap;
+    pdf.text(`Location: ${location}`, x, y);
+
+    pdf.text("Signature:", x, 130);
+    pdf.addImage(signature, "PNG", x, 135, 70, 30);
+
+    const photoFile = document.getElementById("photo").files[0];
+    if (photoFile) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            pdf.text("Photo:", 25, 45);
+            pdf.addImage(e.target.result, "PNG", 20, 50, 70, 70);
+            pdf.save(`${name || "Identity"}.pdf`);
+        };
+        reader.readAsDataURL(photoFile);
+    } else {
+        pdf.save(`${name || "Identity"}.pdf`);
+    }
+}
+</script>
+
+</body>
+</html>
